@@ -5,14 +5,21 @@
 
 import time
 import asyncio
-wait_n = __import__('1-concurrent_coroutines').wait_n
+from typing import List
+wait_random = __import__('0-basic_async_syntax').wait_random
 
 
-def time_measure(n: int, max_delay: int) -> float:
+async def wait_n(n: int, max_delay: int) -> List[float]:
+    """Spawn wait_random n times"""
+    tasks = []
+    delays = []
 
-    start_time = time.time()
-    asyncio.run(wait_n(n, max_delay))
-    end_time = time.time()
+    for i in range(n):
+        task = wait_random(max_delay)
+        tasks.append(task)
 
-    total_time = end_time - start_time
-    return (total_time/n)
+    for task in asyncio.as_completed((tasks)):
+        delay = await task
+        delays.append(delay)
+
+    return delays
